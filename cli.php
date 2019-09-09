@@ -114,10 +114,14 @@ if ( count($argv) > 1 ) {
 			} else {
 				$favicon = $config['login_logo'];
 			}
-			
+
 			$logos = $whitelabeler->replaceImages(
 				$config['path'],
-				$config['url'],
+				// Passing only the url_path to have a absolute-relative 
+				// path in the images url and still work if it's under 
+				// a subdirectory and removing the right trailing slash 
+				// since it's added by `whitelabeler.php`
+				rtrim(parse_url($config['url'], PHP_URL_PATH), '/'), 
 				$version['version'],
 				__DIR__.'/assets/'.$config['sidebar_logo'],
 				$config['sidebar_logo_width'],
