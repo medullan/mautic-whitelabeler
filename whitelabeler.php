@@ -845,10 +845,10 @@ class Whitelabeler
         }
 
         // Verify the URL in config.txt is correct
-        // $url = $this->findMauticUrl($config_vals['url']);
-        // if ( $url['status'] != 1 ) {
-        //     $errors[] = 'Invalid URL provided.';
-        // }
+        // allows whitelabeler to be executed without a live Mautic instance (useful for docker scripts that scripts that bundle white-labeled assets at build time)
+        if ( filter_var($config_vals['url'], FILTER_VALIDATE_URL) === false ) {
+            $errors[] = 'Invalid URL provided.';
+        }
 
         // Verify that a COMPANY name is defined in config.txt
         if (!$config_vals['company']) {
