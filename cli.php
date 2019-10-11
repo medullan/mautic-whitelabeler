@@ -112,10 +112,9 @@ if (count($argv) > 1) {
 
 			$logos = $whitelabeler->replaceImages(
 				$config['path'],
-				// Passing only the url_path to have a absolute-relative
-				// path in the images url and still work if it's under
-				// a subdirectory and removing the right trailing slash
-				// since it's added by `whitelabeler.php`
+				// Allows us to use relative URL paths when referencing images
+				// for config urls that do NOT have a URL path for e.g. https://example.com, the value returned here will be an empty string
+				// for config urls that have a URL path for e.g. https://example.com/mautic/, the value returned here will be the URL path, i.e. /mautic
 				rtrim(parse_url($config['url'], PHP_URL_PATH), '/'),
 				$version['version'],
 				__DIR__ . '/assets/' . $config['sidebar_logo'],
