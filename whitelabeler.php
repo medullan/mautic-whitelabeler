@@ -839,133 +839,133 @@ class Whitelabeler {
             $config_vals = $this->loadJsonConfig('config.json');
         }
 
-	    $errors = array();
+        $errors = array();
 
-	    // Verify the PATH in config.txt is correct and Mautic exists there
-	    $path = $this->mauticVersion($config_vals['path']);
-	    if ( $path['status'] != 1 ) {
-	        $errors[] =  $path['message'];
-	    }
+        // Verify the PATH in config.txt is correct and Mautic exists there
+        $path = $this->mauticVersion($config_vals['path']);
+        if ($path['status'] != 1) {
+            $errors[] =  $path['message'];
+        }
 
-	    // Verify the URL in config.txt is correct
-	    $url = $this->findMauticUrl($config_vals['url']);
-	    if ( $url['status'] != 1 ) {
-	        $errors[] = 'Invalid URL provided' . (isset($url['message']) ? ', ' . $url['message'] : '') . '.';
-	    }
+        // Verify the URL in config.txt is valid URL
+        // Note: not requiring the URL to link to a live Mautic instance allows clients to prepackage white-labeled Mautic instances.
+        if ( filter_var($config_vals['url'], FILTER_VALIDATE_URL) === false ) {
+            $errors[] = 'Invalid URL provided.';
+        }
 
-	    // Verify that a COMPANY name is defined in config.txt
-	    if ( !$config_vals['company'] ) {
-	        $errors[] = 'Please provide a company name.';
-	    }
+        // Verify that a COMPANY name is defined in config.txt
+        if (!$config_vals['company']) {
+            $errors[] = 'Please provide a company name.';
+        }
 
-	    // Verify that a valid hex value is provided for primary in config.json
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['primary'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the primary color.';
-	    }
+        // Verify that a valid hex value is provided for primary in config.json
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['primary'])) {
+            $errors[] = 'Invalid hex value provided for the primary color.';
+        }
 
-	    // Verify that a valid hex value is provided for hover in config.json
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['hover'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the hover color.';
-	    }
+        // Verify that a valid hex value is provided for hover in config.json
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['hover'])) {
+            $errors[] = 'Invalid hex value provided for the hover color.';
+        }
 
-	    // Verify that a valid hex value is provided for logo_bg
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['logo_bg'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the sidebar logo background color.';
-	    }
+        // Verify that a valid hex value is provided for logo_bg
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['logo_bg'])) {
+            $errors[] = 'Invalid hex value provided for the sidebar logo background color.';
+        }
 
-	    // Verify that a valid hex value is provided for sidebar_bg
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_bg'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the sidebar background color.';
-	    }
+        // Verify that a valid hex value is provided for sidebar_bg
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_bg'])) {
+            $errors[] = 'Invalid hex value provided for the sidebar background color.';
+        }
 
-	    // Verify that a valid hex value is provided for sidebar_bg
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_submenu_bg'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the sidebar submenu background color.';
-	    }
+        // Verify that a valid hex value is provided for sidebar_bg
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_submenu_bg'])) {
+            $errors[] = 'Invalid hex value provided for the sidebar submenu background color.';
+        }
 
-	    // Verify that a valid hex value is provided for sidebar_link
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_link'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the sidebar link color.';
-	    }
+        // Verify that a valid hex value is provided for sidebar_link
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_link'])) {
+            $errors[] = 'Invalid hex value provided for the sidebar link color.';
+        }
 
-	    // Verify that a valid hex value is provided for sidebar_link_hover
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_link_hover'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the sidebar link hover color.';
-	    }
+        // Verify that a valid hex value is provided for sidebar_link_hover
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_link_hover'])) {
+            $errors[] = 'Invalid hex value provided for the sidebar link hover color.';
+        }
 
-	    // Verify that a valid hex value is provided for active_icon
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['active_icon'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the active icon color.';
-	    }
+        // Verify that a valid hex value is provided for active_icon
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['active_icon'])) {
+            $errors[] = 'Invalid hex value provided for the active icon color.';
+        }
 
-	    // Verify that a valid hex value is provided for sidebar_divider
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_divider'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the sidebar divider color.';
-	    }
+        // Verify that a valid hex value is provided for sidebar_divider
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['sidebar_divider'])) {
+            $errors[] = 'Invalid hex value provided for the sidebar divider color.';
+        }
 
-	    // Verify that a valid hex value is provided for submenu_bullet_bg
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['submenu_bullet_bg'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the submenu bullet background color.';
-	    }
+        // Verify that a valid hex value is provided for submenu_bullet_bg
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['submenu_bullet_bg'])) {
+            $errors[] = 'Invalid hex value provided for the submenu bullet background color.';
+        }
 
-	    // Verify that a valid hex value is provided for submenu_bullet_shadow
-	    if ( !preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['submenu_bullet_shadow'] ) ) {
-	        $errors[] = 'Invalid hex value provided for the submenu bullet shadow color.';
-	    }
+        // Verify that a valid hex value is provided for submenu_bullet_shadow
+        if (!preg_match('/#([a-fA-F0-9]{3}){1,2}\b/', $config_vals['submenu_bullet_shadow'])) {
+            $errors[] = 'Invalid hex value provided for the submenu bullet shadow color.';
+        }
 
-	    // Verify that sidebar_image file exists in the assets folder
-	    if ( !$this->imageExists($config_vals['sidebar_logo']) ) {
-	        $errors[] = 'Can\'t find the sidebar image provided ('.$config_vals['sidebar_logo'].')';
-	    }
+        // Verify that sidebar_image file exists in the assets folder
+        if (!$this->imageExists($config_vals['sidebar_logo'])) {
+            $errors[] = 'Can\'t find the sidebar image provided (' . $config_vals['sidebar_logo'] . ')';
+        }
 
-	    // Verify that a valid numeric value for sidebar_logo_width was provided
-	    if ( !is_numeric($config_vals['sidebar_logo_width']) ) {
-	        $errors[] = 'Invalid sidebar logo width value provided.';
-	    }
+        // Verify that a valid numeric value for sidebar_logo_width was provided
+        if (!is_numeric($config_vals['sidebar_logo_width'])) {
+            $errors[] = 'Invalid sidebar logo width value provided.';
+        }
 
-	    // Verify that a valid sidebar_logo_margin_top number was provided
-	    if ( !is_numeric($config_vals['sidebar_logo_margin_top']) ) {
-	        $errors[] = 'Invalid sidebar_logo_margin_top value provided.';
-	    }
+        // Verify that a valid sidebar_logo_margin_top number was provided
+        if (!is_numeric($config_vals['sidebar_logo_margin_top'])) {
+            $errors[] = 'Invalid sidebar_logo_margin_top value provided.';
+        }
 
-	    // Verify that a valid sidebar_logo_margin_right number was provided
-	    if ( !is_numeric($config_vals['sidebar_logo_margin_right']) ) {
-	        $errors[] = 'Invalid sidebar_logo_margin_right value provided.';
-	    }
+        // Verify that a valid sidebar_logo_margin_right number was provided
+        if (!is_numeric($config_vals['sidebar_logo_margin_right'])) {
+            $errors[] = 'Invalid sidebar_logo_margin_right value provided.';
+        }
 
-	    // Verify that a valid sidebar_logo_margin_left number was provided
-	    if ( !is_numeric($config_vals['sidebar_logo_margin_left']) ) {
-	        $errors[] = 'Invalid sidebar_logo_margin_left value provided.';
-	    }
+        // Verify that a valid sidebar_logo_margin_left number was provided
+        if (!is_numeric($config_vals['sidebar_logo_margin_left'])) {
+            $errors[] = 'Invalid sidebar_logo_margin_left value provided.';
+        }
 
-	    // Verify that login_logo file exists in the assets folder
-	    if ( !$this->imageExists($config_vals['login_logo']) ) {
-	        $errors[] = 'Can\'t find the login logo image provided ('.$config_vals['login_logo'].')';
-	    }
+        // Verify that login_logo file exists in the assets folder
+        if (!$this->imageExists($config_vals['login_logo'])) {
+            $errors[] = 'Can\'t find the login logo image provided (' . $config_vals['login_logo'] . ')';
+        }
 
-	    // Verify that a valid numeric value for sidebar_logo_width was provided
-	    if ( !is_numeric($config_vals['login_logo_width']) ) {
-	        $errors[] = 'Invalid login logo width value provided.';
-	    }
+        // Verify that a valid numeric value for sidebar_logo_width was provided
+        if (!is_numeric($config_vals['login_logo_width'])) {
+            $errors[] = 'Invalid login logo width value provided.';
+        }
 
-	    // Verify that a valid login_logo_margin_top number was provided
-	    if ( !is_numeric($config_vals['login_logo_margin_top']) ) {
-	        $errors[] = 'Invalid login_logo_margin_top value provided.';
-	    }
+        // Verify that a valid login_logo_margin_top number was provided
+        if (!is_numeric($config_vals['login_logo_margin_top'])) {
+            $errors[] = 'Invalid login_logo_margin_top value provided.';
+        }
 
-	    // Verify that a valid login_logo_margin_top number was provided
-	    if ( !is_numeric($config_vals['login_logo_margin_bottom']) ) {
-	        $errors[] = 'Invalid login_logo_margin_bottom value provided.';
-	    }
+        // Verify that a valid login_logo_margin_top number was provided
+        if (!is_numeric($config_vals['login_logo_margin_bottom'])) {
+            $errors[] = 'Invalid login_logo_margin_bottom value provided.';
+        }
 
-	    // Verify that favicon file exists in the assets folder
-	    if ( !$this->imageExists($config_vals['favicon']) ) {
-	        $errors[] = 'Can\'t find the favicon image provided ('.$config_vals['favicon'].')';
-	    }
+        // Verify that favicon file exists in the assets folder
+        if (!$this->imageExists($config_vals['favicon'])) {
+            $errors[] = 'Can\'t find the favicon image provided (' . $config_vals['favicon'] . ')';
+        }
 
-	    return array(
-	        'errors' => $errors,
+        return array(
+            'errors' => $errors,
             'config' => $config_vals
-	    );
-	}
+        );
+    }
 }

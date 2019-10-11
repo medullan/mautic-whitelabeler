@@ -64,9 +64,10 @@ if ( count($argv) > 1 ) {
 				$config['submenu_bullet_bg'],
 				$config['submenu_bullet_shadow']
 			);
-			
-			if ( $colors['status'] == 1 ) {
-                $cli->green($colors['message']);
+
+			if ($colors['status'] == 1) {
+
+				$cli->green($colors['message']);
 			} else {
 				$cli->error($colors['message']);
 				exit();
@@ -133,19 +134,18 @@ if ( count($argv) > 1 ) {
 			}
 
 			// Clear Mautic cache and rebuild assets
-			
-            $cli->out('Clearing Mautic cache...');
-            $clear_cache = $whitelabeler->clearMauticCache($config['path']);
-			if ( $clear_cache['status'] == 1 ) {
-                
-                $cli->out('Rebuilding Mautic assets...');
-                $whitelabeler->rebuildAssets($config['path']);
-                $cli->green('Finished!');
-                $cli->out('Make sure to clear your browser\'s cache if your Mautic styles aren\'t updated after a browser refresh!');
-                
-            } else {
-                $cli->error($clear_cache['message']);
-            }
+
+			$cli->out('Clearing Mautic cache...');
+			$clear_cache = $whitelabeler->clearMauticCache($config['path']);
+			if ($clear_cache['status'] == 1) {
+
+				$cli->out('Rebuilding Mautic assets...');
+				$whitelabeler->rebuildAssets($config['path']);
+				$cli->green('Finished!');
+				$cli->out('Make sure to clear your browser\'s cache if your Mautic styles aren\'t updated after a browser refresh!');
+			} else {
+				$cli->error($clear_cache['message']);
+			}
 		}
 	} elseif ($argv[1] == '--backup') {
 
@@ -154,68 +154,65 @@ if ( count($argv) > 1 ) {
 			$mautic_path = dirname(__DIR__, 1);
 			$backups_dir = __DIR__ . '/backups';
 
-    } elseif ( $argv[1] == '--backup' ) {	  
-        if ( $whitelabeler->mauticVersion(dirname(__DIR__, 1))['status'] == 1 ) {
-            $mautic_path = dirname(__DIR__, 1);
-            $backups_dir = __DIR__.'/backups';
-            $cli->out('Backing up Mautic... ');
-            	
-            // Create backups folder if it doesn't exist
-            if ( !file_exists($backups_dir) ) {
-                mkdir($backups_dir, 0755, true);
-            }
-			
-            // Get the name of the top directory that Mautic is in
-            $mautic_dir_name = explode('/', $mautic_path);
-            $mautic_dir_name = end($mautic_dir_name);
-            
-            $backup_name = $mautic_dir_name.'_backup_'.date('Y-m-d_H-i-s',time());
-            
-            echo shell_exec('cd '.$mautic_path.'; tar --exclude=./'.basename(__DIR__).' -zcvf '.$mautic_path.'/'.basename(__DIR__).'/backups/'.$backup_name.'.tgz .');
-          
-            if ( !file_exists($backups_dir.'/'.$backup_name.'.tgz') ) {
-                $cli->red('There was a problem creating the backup.');
-            } else {
-                $cli->green('Backup complete!');
-            }
-              			
- 		} else {
-     		$cli->yellow('Mautic not found. Make sure the whitelabeler is placed in the Mautic root directory.');
- 		}
+			$cli->out('Backing up Mautic... ');
 
-    } elseif ( $argv[1] == '--restore' ) {
-	    if ( !is_dir(__DIR__.'/backups') ) {
-		    $cli->yellow('No backups found. Use "php cli.php --backup --path=/path/to/mautic" to backup a Mautic installation');
-		    exit();
-	    }
-	    // Look for backups
-	    $backups = array();
-		foreach (new DirectoryIterator(__DIR__.'/backups') as $file) {
-		    if ( $file->isDot() ) continue;
-		    if ( $file->isFile() ) {
-    		    $file_extension = explode('.', $file);
-    		    $file_extension = end($file_extension);
-				if ( $file_extension == 'tgz' ) {
-		        	array_push($backups, $file->getFilename());	
+			// Create backups folder if it doesn't exist
+			if (!file_exists($backups_dir)) {
+				mkdir($backups_dir, 0755, true);
+			}
+
+			// Get the name of the top directory that Mautic is in
+			$mautic_dir_name = explode('/', $mautic_path);
+			$mautic_dir_name = end($mautic_dir_name);
+
+			$backup_name = $mautic_dir_name . '_backup_' . date('Y-m-d_H-i-s', time());
+
+			echo shell_exec('cd ' . $mautic_path . '; tar --exclude=./' . basename(__DIR__) . ' -zcvf ' . $mautic_path . '/' . basename(__DIR__) . '/backups/' . $backup_name . '.tgz .');
+
+			if (!file_exists($backups_dir . '/' . $backup_name . '.tgz')) {
+				$cli->red('There was a problem creating the backup.');
+			} else {
+				$cli->green('Backup complete!');
+			}
+		} else {
+			$cli->yellow('Mautic not found. Make sure the whitelabeler is placed in the Mautic root directory.');
+		}
+	} elseif ($argv[1] == '--restore') {
+
+		if (!is_dir(__DIR__ . '/backups')) {
+			$cli->yellow('No backups found. Use "php cli.php --backup --path=/path/to/mautic" to backup a Mautic installation');
+			exit();
+		}
+
+		// Look for backups
+		$backups = array();
+		foreach (new DirectoryIterator(__DIR__ . '/backups') as $file) {
+			if ($file->isDot()) continue;
+			if ($file->isFile()) {
+				$file_extension = explode('.', $file);
+				$file_extension = end($file_extension);
+				if ($file_extension == 'tgz') {
+					array_push($backups, $file->getFilename());
 				}
 			}
 		}
 
-	    if ( !empty($backups) ) {
-		    
-		    $input = $cli->radio('Select a backup to use:', $backups);
-			$restore_backup = __DIR__.'/backups/'.$input->prompt();
-			
-	    } else {
-		    $cli->yellow('No backups found. Use "php cli.php --backup --path=/path/to/mautic" to backup a Mautic installation');
-		    exit();
-	    }
-	    
-		if ( $whitelabeler->mauticVersion(dirname(__DIR__, 1))['status'] == 1 ) {
+		if (!empty($backups)) {
+
+			$input = $cli->radio('Select a backup to use:', $backups);
+			$restore_backup = __DIR__ . '/backups/' . $input->prompt();
+		} else {
+			$cli->yellow('No backups found. Use "php cli.php --backup --path=/path/to/mautic" to backup a Mautic installation');
+			exit();
+		}
+
+		if ($whitelabeler->mauticVersion(dirname(__DIR__, 1))['status'] == 1) {
+
 			$mautic_path = dirname(__DIR__, 1);
 			$cli->out('Mautic found.');
 		} else {
-			$input = $cli->yellow('Couldn\'t automatically find your Mautic files in '. dirname(__DIR__, 1));
+
+			$input = $cli->yellow('Couldn\'t automatically find your Mautic files in ' . dirname(__DIR__, 1));
 			$input = $cli->input('What\'s the absolute path to your Mautic files?');
 			$mautic_path = $input->prompt();
 
@@ -235,54 +232,54 @@ if ( count($argv) > 1 ) {
 		$mautic_dir_name = explode('/', $mautic_path);
 		$mautic_dir_name = end($mautic_dir_name);
 
-		$cli->out('Extracting backup files to Mautic directory...');			
-		
-		echo shell_exec('cd '.$mautic_path.'; tar --strip-components=1 -zxvf '.$mautic_path.'/'.basename(__DIR__).'/backups/'.$backup_name);
-		
-        $cli->out('Setting ownership of the Mautic directory to www-data:www-data user/group...');
-        shell_exec('chown -R www-data:www-data '.$mautic_path);
-        $cli->green('Restore complete!');
-	
-	} elseif ( $argv[1] == '--compare' ) {
-		$errors = array();
-        if ( isset($argv[2]) && substr($argv[2], 0, 7) == '--path1' ) {
-            $mautic_path_1 = explode('=', $argv[2]);
-            $mautic_path_1 = $mautic_path_1[1];
-        } else {
-            $errors[] = 'Define the path to Mautic installation 1.';
-        }
+		$cli->out('Extracting backup files to Mautic directory...');
 
-        if ( isset($argv[3]) && substr($argv[3], 0, 7) == '--path2' ) {
-            $mautic_path_2 = explode('=', $argv[3]);
-            $mautic_path_2 = $mautic_path_2[1];  
-        } else {
-           $errors[] = 'Define the path to Mautic installation 2.';
-        }
-        
-        if (!empty($errors)) {
-        	    foreach($errors as $error) {
-            	    $cli->error($error);
-        	    }
-            exit();    
-        }
-        
-        if ( !file_exists($mautic_path_1.'/app/version.txt') ) {
-            $errors[] = 'Not able to find Mautic at path 1.';
-        }
-        
-        if ( !file_exists($mautic_path_2.'/app/version.txt') ) {
-            $errors[] = 'Not able to find Mautic at path 2.';
-        }
-        
-        if (empty($errors)) {   
-            $cli->dump($whitelabeler->compareMauticVersions($mautic_path_1, $mautic_path_2));
-    	    } else {
-        	    foreach($errors as $error) {
-            	    $cli->error($error);
-        	    }
-    	    }
-    	}
-   
+		echo shell_exec('cd ' . $mautic_path . '; tar --strip-components=1 -zxvf ' . $mautic_path . '/' . basename(__DIR__) . '/backups/' . $backup_name);
+
+		$cli->out('Setting ownership of the Mautic directory to www-data:www-data user/group...');
+		shell_exec('chown -R www-data:www-data ' . $mautic_path);
+		$cli->green('Restore complete!');
+	} elseif ($argv[1] == '--compare') {
+
+		$errors = array();
+
+		if (isset($argv[2]) && substr($argv[2], 0, 7) == '--path1') {
+			$mautic_path_1 = explode('=', $argv[2]);
+			$mautic_path_1 = $mautic_path_1[1];
+		} else {
+			$errors[] = 'Define the path to Mautic installation 1.';
+		}
+
+		if (isset($argv[3]) && substr($argv[3], 0, 7) == '--path2') {
+			$mautic_path_2 = explode('=', $argv[3]);
+			$mautic_path_2 = $mautic_path_2[1];
+		} else {
+			$errors[] = 'Define the path to Mautic installation 2.';
+		}
+
+		if (!empty($errors)) {
+			foreach ($errors as $error) {
+				$cli->error($error);
+			}
+			exit();
+		}
+
+		if (!file_exists($mautic_path_1 . '/app/version.txt')) {
+			$errors[] = 'Not able to find Mautic at path 1.';
+		}
+
+		if (!file_exists($mautic_path_2 . '/app/version.txt')) {
+			$errors[] = 'Not able to find Mautic at path 2.';
+		}
+
+		if (empty($errors)) {
+			$cli->dump($whitelabeler->compareMauticVersions($mautic_path_1, $mautic_path_2));
+		} else {
+			foreach ($errors as $error) {
+				$cli->error($error);
+			}
+		}
+	}
 } else {
 	$cli->addArt(__DIR__ . '/lib/ascii');
 	$cli->magenta()->draw('title');
