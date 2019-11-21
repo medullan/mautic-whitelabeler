@@ -703,7 +703,6 @@ class Whitelabeler
                 'message' => 'Compatible version found (' . $latest2xVersion . ')'
             );
         } else {
-
             return array(
                 'status' => 0,
                 'message' => 'The version of Mautic you are using (' . $version . ') is not currently supported.'
