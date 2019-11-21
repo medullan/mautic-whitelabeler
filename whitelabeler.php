@@ -681,6 +681,8 @@ class Whitelabeler
     {
         $path = 'templates';
         $versions = array();
+        $regexFor2xMauticVersion = '/^2\.\d+\.\d+(-.+)*/i';
+
         foreach (new DirectoryIterator($path) as $file) {
             if ($file->isDot()) continue;
             if ($file->isDir()) {
@@ -688,11 +690,17 @@ class Whitelabeler
             }
         }
         if (in_array(substr($version, 0, 3), $versions) || in_array($version, $versions)) {
-
             return array(
                 'status' => 1,
                 'version' => $version,
                 'message' => 'Compatible version found (' . $version . ')'
+            );
+        } else if (preg_match($regexFor2xMauticVersion, $version)) { // we assume that once the major version doesn't change, we can run the whitelabeler with the latest 2.x template
+            $latest2xVersion = end(preg_grep($regexFor2xMauticVersion, $versions));
+            return array(
+                'status' => 1,
+                'version' => $latest2xVersion,
+                'message' => 'Compatible version found (' . $latest2xVersion . ')'
             );
         } else {
 
