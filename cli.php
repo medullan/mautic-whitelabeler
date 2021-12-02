@@ -4,56 +4,49 @@ require_once('whitelabeler.php');
 $cli = new League\CLImate\CLImate;
 $whitelabeler = new Whitelabeler;
 
-if (count($argv) > 1) {
+if ( count($argv) > 1 ) {
+    if ( $argv[1] == '--whitelabel' ) {
+        if ( isset($argv[2]) ) {
+	        $config_file = explode('=', $argv[2]);
+	        if ( !empty($config_file) && $config_file[0] == '--config' ) {
+		        
+		        if ( file_exists($config_file[1]) ) {
+			        $config = $whitelabeler->validateConfigValues($config_file[1]);
+		        } else {
+			        $cli->error('Config file not found.');
+			        exit();
+		        }
+	        } else {
+		    
+	            if ( file_exists(__DIR__.'/assets/'.$argv[2]) ) {
+	                $config = $whitelabeler->validateConfigValues($argv[2]);
+	            } else {
+	                $cli->error('Config file not found.');
+	                exit();
+	            }
+	        }
+        } else {
+	        if ( file_exists(__DIR__.'/assets/config.json') ) {
+            	$config = $whitelabeler->validateConfigValues();
+            } else {
+	            $cli->error('Config file not found.');
+	            exit();
+            }
+        }
 
-	if ($argv[1] == '--whitelabel') {
-
-		if (isset($argv[2])) {
-
-			$config_file = explode('=', $argv[2]);
-
-			if (!empty($config_file) && $config_file[0] == '--config') {
-
-				if (file_exists($config_file[1])) {
-					$config = $whitelabeler->validateConfigValues($config_file[1]);
-				} else {
-					$cli->error('Config file not found.');
-					exit();
-				}
-			} else {
-
-				if (file_exists(__DIR__ . '/assets/' . $argv[2])) {
-					$config = $whitelabeler->validateConfigValues($argv[2]);
-				} else {
-					$cli->error('Config file not found.');
-					exit();
-				}
-			}
+		if ( !empty($config['errors'] ) ) {
+		    foreach( $config['errors'] as $error ) {
+		        $cli->red($error);
+		    }
 		} else {
-			if (file_exists(__DIR__ . '/assets/config.json')) {
-				$config = $whitelabeler->validateConfigValues();
-			} else {
-				$cli->error('Config file not found.');
-				exit();
-			}
-		}
+		    $cli->magenta('Whitelabeling...');
 
-		if (!empty($config['errors'])) {
-
-			foreach ($config['errors'] as $error) {
-				$cli->red($error);
-			}
-		} else {
-
-			$cli->magenta('Whitelabeling...');
-
-			// Replace CSS colors
-
-			$cli->out('Updating colors...');
-
-			$config = $config['config'];
-
-			$version = $whitelabeler->mauticVersion($config['path']);
+		    // Replace CSS colors
+		    $cli->out('Updating colors...');
+		    
+		    $config = $config['config'];
+		    
+		    $version = $whitelabeler->mauticVersion($config['path']);
 
 			$colors = $whitelabeler->colors(
 				$config['path'],
@@ -90,16 +83,16 @@ if (count($argv) > 1) {
 				$config['footer_prefix'],
 				$config['footer']
 			);
-
-			if ($company_name['status'] == 1) {
+            	
+			if ( $company_name['status'] == 1 ) {
 				$cli->green($company_name['message']);
 			} else {
-				foreach ($company_name['message'] as $error) {
+				foreach( $company_name['message'] as $error ) {
 					$cli->error($error);
 				}
 				exit();
 			}
-
+			
 			// Update logo images
 
 			$cli->out('Updating logo files...');
