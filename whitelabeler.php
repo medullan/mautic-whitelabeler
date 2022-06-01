@@ -848,11 +848,11 @@ class Whitelabeler {
 	        $errors[] =  $path['message'];
 	    }
 
-	    // Verify the URL in config.txt is correct
-	    $url = $this->findMauticUrl($config_vals['url']);
-	    if ( $url['status'] != 1 ) {
-	        $errors[] = 'Invalid URL provided' . (isset($url['message']) ? ', ' . $url['message'] : '') . '.';
-	    }
+	    // Verify the URL in config.txt is valid URL
+      // Note: not requiring the URL to link to a live Mautic instance allows clients to prepackage white-labeled Mautic instances.
+			if ( filter_var($config_vals['url'], FILTER_VALIDATE_URL) === false ) {
+				$errors[] = 'Invalid URL provided.';
+			}
 
 	    // Verify that a COMPANY name is defined in config.txt
 	    if ( !$config_vals['company'] ) {
